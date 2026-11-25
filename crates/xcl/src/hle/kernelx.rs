@@ -223,6 +223,15 @@ pub mod mirrors {
         let (&gpu, &(size, cpu)) = s.gpu.range(..=va).next_back()?;
         (va < gpu + size).then(|| cpu + (va - gpu))
     }
+
+    /// All GPU-view addresses paired with `cpu_va` (reverse of `source`).
+    pub fn gpu_views_of(cpu_va: usize) -> Vec<usize> {
+        let s = STATE.lock().unwrap();
+        s.gpu
+            .iter()
+            .filter_map(|(&gpu, &(size, cpu))| (cpu_va >= cpu && cpu_va < cpu + size).then(|| gpu + (cpu_va - cpu)))
+            .collect()
+    }
 }
 
 /// Graphics memory (MEM_GRAPHICS, committed, no fixed address) comes from the unified
