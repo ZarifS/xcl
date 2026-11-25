@@ -3189,9 +3189,8 @@ unsafe extern "system" fn mem_heap_release(this: *mut c_void) -> u32 {
                     }
                     h.remove(&(this as usize));
                 } else {
-                    // Buffers still alive: mark heap as released (block = None) so last buffer knows to free it
-                    // We keep the entry with live_buffers count; the last buffer's Release will free the block
-                    e.block = None;
+                    // Buffers still alive: keep the entry (and its block) so the last buffer's
+                    // Release can free the block when live_buffers reaches zero.
                 }
             }
         }
